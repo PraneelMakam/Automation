@@ -1,0 +1,44 @@
+name: CPU Verification CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flask
+
+      - name: Run test simulations
+        run: |
+          python run_tests.py --output logs
+
+      - name: Run unit tests
+        run: |
+          python -m unittest test_runner.py
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-logs
+          path: logs/
+
+      - name: Notify Slack
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"❌ CI failed in cpu-verif-ci-demo."}' ${{ secrets.SLACK_WEBHOOK_URL }}
