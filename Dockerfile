@@ -5,4 +5,4 @@ COPY . /app
 
 RUN pip install flask
 
-CMD ["python", "dashboard/app.py"]
+CMD ["python", "C:\Users\Praneel\Projects\Automated CICD Pipeline for Simulated CPU Verification\app.py"]
